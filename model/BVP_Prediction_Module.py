@@ -5,6 +5,12 @@ from data import ClipFramesLen
 class BVP_Prediction_Module(nn.Module):
 
     def __init__(self, opt):
+        """
+        Initialize the BVP_Prediction_Module.
+
+        Args:
+            opt: Options object containing parameters.
+        """
         super(BVP_Prediction_Module, self).__init__()
         channel = opt.bpm_in_channel
         act = opt.act_layer

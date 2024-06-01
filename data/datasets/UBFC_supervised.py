@@ -6,10 +6,19 @@ import data.datasets.transforms as transforms
 
 class UBFCSupervised(UBFC):
     def __init__(self, split, arg_obj):
+        """
+        Initialize the UBFCSupervised dataset.
+
+        Args:
+            split (str): The data split to load, e.g., 'train', 'test', or 'all'.
+            arg_obj: An object containing the arguments passed to the program.
+        """
         super().__init__(split, arg_obj)
 
-
     def set_augmentations(self):
+        """
+        Set the augmentations based on the specified arguments.
+        """
         self.aug_flip = False
         self.aug_illum = False
         self.aug_gauss = False
@@ -23,8 +32,16 @@ class UBFCSupervised(UBFC):
             self.aug_resizedcrop = True if 'c' in self.aug else False
         self.aug_reverse = False ## Don't use this with supervised
 
-
     def __getitem__(self, idx):
+        """
+        Get the item (clip, wave, mask, subject ID, speed) at the specified index.
+
+        Args:
+            idx (int): Index of the item to retrieve.
+
+        Returns:
+            tuple: A tuple containing the clip, wave, mask, subject ID, and speed.
+        """
         subj, start_idx = self.samples[idx]
         idcs = np.arange(start_idx, start_idx + self.frames_per_clip, dtype=int)
         clip = self.data[subj]['video'][idcs] # [T,H,W,C]

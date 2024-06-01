@@ -7,6 +7,18 @@ from model.Self_Attention_Block import Attention_mask
 class ROI_Selection_Block(torch.nn.Module):
 
     def __init__(self, in_channel, out_channel, kernel_size=[3, 3, 3], stride=1, padding=1, act="relu"):
+        """
+        Initialize the ROI_Selection_Block module.
+
+        Args:
+            in_channel (int): Number of input channels.
+            out_channel (int): Number of output channels.
+            kernel_size (int or tuple): Kernel size for convolution. Default is [3, 3, 3].
+            stride (int or tuple): Stride for convolution. Default is 1.
+            padding (int or tuple): Padding size for convolution. Default is 1.
+            act (str): Type of activation function. Default is "relu".
+
+        """
         super(ROI_Selection_Block, self).__init__()
         self.data_conv = nn.Sequential(
             nn.Conv3d(in_channel, out_channel, kernel_size, stride=1, padding=1),

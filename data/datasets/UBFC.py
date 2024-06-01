@@ -8,8 +8,16 @@ import sys
 import data.datasets.transforms as transforms
 from data import ClipFramesLen, ClipStep
 
+
 class UBFC(VisionDataset):
     def __init__(self, split, arg_obj):
+        """
+        Initialize the UBFC dataset.
+
+        Args:
+            split (str): The data split to load, e.g., 'train', 'test', or 'all'.
+            arg_obj: An object containing the arguments passed to the program.
+        """
         super(UBFC, self).__init__(split, arg_obj)
 
         self.round_robin_index = int(arg_obj.K)
@@ -32,8 +40,10 @@ class UBFC(VisionDataset):
         print('Samples: ', self.samples.shape)
         print('Total frames: ', self.samples.shape[0] * self.frames_per_clip)
 
-
     def load_data(self):
+        """
+        Load the data from CSV files based on the specified frames per second (FPS).
+        """
         if self.fps == 30:
             meta = pd.read_csv('data/datasets/metadata/UBFC.csv')
         elif self.fps == 90:
@@ -41,8 +51,6 @@ class UBFC(VisionDataset):
         else:
             print('Invalid fps for UBFC loader. Must be in [30,90]. Exiting.')
             sys.exit(-1)
-
-        ids = meta['id']
 
         # Determine which subject modulus to use
         use_mods = set()
@@ -74,9 +82,9 @@ class UBFC(VisionDataset):
                 data.append(d)
         self.data = data
 
-
     def pad_inputs(self):
-        ''' Add a step-width pad to both ends so the whole video is processed.
+        '''
+        Add pad to both ends so the whole video is processed.
         '''
         if (self.split == 'test') or (self.split == 'all'):
             self.masks = []
@@ -91,12 +99,16 @@ class UBFC(VisionDataset):
                     mask = np.hstack((mask, np.zeros(pad, dtype=bool)))
                 self.masks.append(mask)
 
-
     def set_augmentations(self):
+        """
+        Set the augmentations based on the specified arguments.
+        """
         raise NotImplementedError
 
-
     def build_samples(self):
+        """
+        Build samples array containing (subj, start_idx) for each clip.
+        """
         start_idcs = self.get_start_idcs()
         ## Want array of size clips with (subj, start_idx) in each element
         samples = []
@@ -107,8 +119,10 @@ class UBFC(VisionDataset):
             samples.append(sample)
         self.samples = np.hstack(samples).T
 
-
     def get_start_idcs(self):
+        """
+        Get the start indices for each subject's video clips.
+        """
         start_idcs = []
         for wave in self.waves:
             slen = len(wave)
@@ -118,8 +132,10 @@ class UBFC(VisionDataset):
         start_idcs = np.array(start_idcs, dtype=object)
         return start_idcs
 
-
     def get_subj_sizes(self):
+        """
+        Get the number of frames per subject.
+        """
         subjects = np.unique(self.samples[:, 0])
         ends = []
         for subj in subjects:
@@ -128,8 +144,19 @@ class UBFC(VisionDataset):
         frames_per_subj = np.array(ends) + self.frames_per_clip
         return frames_per_subj
 
-
     def apply_transformations(self, clip, subj, idcs, augment=True):
+        """
+        Apply transformations (e.g., augmentation) to the input clip.
+
+        Args:
+            clip (numpy.ndarray): The input video clip.
+            subj (int): Subject ID.
+            idcs (numpy.ndarray): Indices of the clip.
+            augment (bool): Whether to apply augmentation.
+
+        Returns:
+            tuple: Transformed clip, indices, and speed (if applicable).
+        """
         speed = 1.0
         if augment:
             ## Time resampling
@@ -163,10 +190,8 @@ class UBFC(VisionDataset):
 
         return clip, idcs, speed
 
-
     def __len__(self):
         return self.samples.shape[0]
-
 
     def __getitem__(self, idx):
         raise NotImplementedError

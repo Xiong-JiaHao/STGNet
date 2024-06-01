@@ -1,26 +1,29 @@
 import sys
 
+
 def get_dataset(split, arg_obj):
+    """
+    Load the specified dataset based on the argument object.
+
+    Args:
+        split (str): The data split to load, e.g., 'train', 'test', or 'valid'.
+        arg_obj: An object containing the arguments passed to the program.
+
+    Returns:
+        DataSet: An instance of the dataset class corresponding to the specified dataset and split.
+
+    Raises:
+        SystemExit: If the specified dataset is not found, the function exits with an error code.
+    """
     dataset = arg_obj.dataset.lower()
 
-    if dataset == 'pure_unsupervised':
-        from data.datasets.PURE_unsupervised import PUREUnsupervised as DataSet
-        print('Using PURE unsupervised dataset.')
-    elif dataset == 'pure_supervised':
+    if dataset == 'pure_supervised':
         from data.datasets.PURE_supervised import PURESupervised as DataSet
         print('Using PURE supervised dataset.')
-    elif dataset == 'ubfc_unsupervised':
-        from data.datasets.UBFC_unsupervised import UBFCUnsupervised as DataSet
         print('Using UBFC unsupervised dataset.')
     elif dataset == 'ubfc_supervised':
         from data.datasets.UBFC_supervised import UBFCSupervised as DataSet
         print('Using UBFC supervised dataset.')
-    elif dataset == 'vipl_unsupervised':
-        from data.datasets.VIPL_unsupervised import VIPLUnsupervised as DataSet
-        print('Using VIPL unsupervised dataset.')
-    elif dataset == 'vipl_supervised':
-        from data.datasets.VIPL_supervised import VIPLSupervised as DataSet
-        print('Using VIPL supervised dataset.')
     else:
         print('Dataset not found. Exiting.')
         sys.exit(-1)

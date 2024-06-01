@@ -8,17 +8,25 @@ from model.BVP_Prediction_Module import BVP_Prediction_Module
 class STGNet(nn.Module):
 
     def __init__(self):
+        """
+        Initialize the Spatio-Temporal Graph Network.
+
+        The network consists of a stem module, a spatio-temporal graph module, and a blood volume pulse prediction module.
+        """
         super().__init__()
-        self.opt = OptInit()
-        self.stem = Stem_Module(self.opt)
-        self.STGM = ST_Graph_Moudle(self.opt)
-        self.BPM = BVP_Prediction_Module(self.opt)
+        self.opt = OptInit()  # Initialize options
+        self.stem = Stem_Module(self.opt)  # Initialize the stem module
+        self.STGM = ST_Graph_Moudle(self.opt)  # Initialize the spatio-temporal graph module
+        self.BPM = BVP_Prediction_Module(self.opt)  # Initialize the blood volume pulse prediction module
 
         # Initialize weights
         self.init_weights()
 
     @torch.no_grad()
     def init_weights(self):
+        """
+        Initialize the weights of the network.
+        """
         def _init(m):
             if isinstance(m, nn.Linear):
                 nn.init.xavier_uniform_(m.weight)
@@ -34,6 +42,9 @@ class STGNet(nn.Module):
         return wave
 
     def __str__(self):
+        """
+        Return a string representation of the network configuration.
+        """
         str = self.opt.__str__() + "\n"
         str = str + self.stem.__str__() + "\n"
         str = str + self.STGM.__str__() + "\n"
@@ -41,35 +52,47 @@ class STGNet(nn.Module):
         return str
 
     def save_model(self, log):
+        """
+        Save the model's weights to a file.
+
+        Args:
+            log (str): Path to the directory where the model weights will be saved.
+        """
         torch.save(self.state_dict(), log + '/' + 'model_hr_best.pkl')
 
 
 class OptInit:
     def __init__(self):
-        # general
-        self.act_layer = 'gelu'
-        self.norm = 'batch'
+        """
+        Initialize the options for configuring the network.
+        """
+        # General options
+        self.act_layer = 'gelu'  # Activation function
+        self.norm = 'batch'  # Normalization method
 
-        # Stem
-        self.stem_in_channel = 3 * 2
-        self.stem_channel = [16, 16, 16, 32, 32, 32, 64, 64]
-        self.stem_downsample_status = [2, -1, 0, 1, -1, 0, 2, 0]
+        # Stem options
+        self.stem_in_channel = 3 * 2  # Number of input channels for the stem module
+        self.stem_channel = [16, 16, 16, 32, 32, 32, 64, 64]  # Channels in each layer of the stem module
+        self.stem_downsample_status = [2, -1, 0, 1, -1, 0, 2, 0]  # Downsample status for each layer
 
-        # STGDM
-        self.stgm_in_channel = 64
-        self.stgm_time_channel = [40, 40, 20, 20]
-        self.stgm_pos_size = [8, 8, 4, 4]
-        self.stgm_gnn_num = [2, 3, 2, 1]
-        self.stgm_gnn_dropout_rate = [0.25, 0.25, 0.25]
-        self.stgm_gnn_k = [64, 32, 16, 16]
-        self.stgm_gnn_conv = "avg_relative_conv"
-        self.stgm_gnn_bias = True
-        self.stgm_gnn_epsilon = 0.2
-        self.stgm_gnn_stochastic = False
+        # Spatio-temporal graph module (STGM) options
+        self.stgm_in_channel = 64  # Number of input channels for the STGM
+        self.stgm_time_channel = [40, 40, 20, 20]  # Number of time channels in each layer of the STGM
+        self.stgm_pos_size = [8, 8, 4, 4]  # Size in each layer of the STGM
+        self.stgm_gnn_num = [2, 3, 2, 1]  # Number of graph convolution layers in each layer of the STGM
+        self.stgm_gnn_dropout_rate = [0.25, 0.25, 0.25]  # Dropout rate for each layer of the STGM
+        self.stgm_gnn_k = [64, 32, 16, 16]  # Number of neighbors for each layer of the STGM
+        self.stgm_gnn_conv = "avg_relative_conv"  # Type of graph convolution in the STGM
+        self.stgm_gnn_bias = True  # Whether to use bias in graph convolution
+        self.stgm_gnn_epsilon = 0.2  # Epsilon value for normalization in graph convolution
+        self.stgm_gnn_stochastic = False  # Whether to use stochastic sampling in graph convolution
 
-        # BPM
-        self.bpm_in_channel = 64
+        # Blood volume pulse prediction module (BPM) options
+        self.bpm_in_channel = 64  # Number of input channels for the BPM
 
     def __str__(self):
+        """
+        Return a string representation of the options.
+        """
         attrs = vars(self)
         return ', '.join("%s: %s" % item for item in attrs.items())
