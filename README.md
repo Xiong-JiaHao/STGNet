@@ -1,4 +1,5 @@
 ## STGNet: Spatio-Temporal Graph Neural Network in Camera-based Remote Photoplethysmography
+### [STGNet.pdf](https://www.sciencedirect.com/science/article/pii/S1746809424007481)
 * Color Space：RGB
 * Dataset：UBFC-rPPG and PURE
 * STGNet
@@ -10,6 +11,9 @@
       * 3D Conv + Attention Mask + 3D Conv
   * BVP Prediction Module：3D Transpose Conv + 3D AvgPool ([B, 64, 20, 4, 4] -> [B, 160])
 * Loss： NegPearson
+
+### Abstract
+As the global population continues to age, the demand for convenient monitoring of physiological signals has grown significantly. Camera-based remote photoplethysmography (rPPG) has emerged as promising due to its non-contact characteristic, especially with the integration of deep learning methods. However, existing deep learning-based rPPG methods often overlook the inherent properties of physiological signals, such as periodicity and consistency, resulting in inaccurate physiological signal estimation. In this paper, we propose a novel remote photoplethysmography model using the spatio-temporal graph neural networks and the attention mask, named STGNet, which is based on the inherent properties that physiological signals are always similar in different facial regions across adjacent time segments of the same individual. We utilize the spatio-temporal graph neural networks to denoise physiological signals according to their periodicity and consistency. Additionally, we use the attention mask to filter the facial region abundant in physiological signals, thereby preventing excessive interference from surrounding information. Our proposed STGNet model shows comparable and even superior performance compared with state-of-the-art methods, as validated on the UBFC-rPPG and PURE datasets. To the best of our knowledge, this is the first work to estimate physiological signal using spatio-temporal graph neural networks.
 
 ### Stem Module (model/Stem_Block.py)
 
